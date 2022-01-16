@@ -1,0 +1,13 @@
+---
+
+- hosts: all
+  become : true
+  tasks:      
+    
+  - name: install vlc
+    yum: 
+      name: vlc    
+
+  - name: installing terminator
+    yum:
+      name: terminator     

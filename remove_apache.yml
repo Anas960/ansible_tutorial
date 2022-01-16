@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  become : true
+  tasks:      
+    
+  - name: removing vlc
+    yum: 
+      name: vlc 
+      state: absent   
+
+  - name: removing terminator
+    yum:
+      name: terminator
+      state: absent 
