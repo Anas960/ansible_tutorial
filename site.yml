@@ -4,13 +4,22 @@
   become : true
   tasks:    
 
-  - name: install updates all (CentOs)
+  - name: update repo cache (CentOs)
     tags: always
     dnf:
-       update_only: yes
        update_cache: yes
+    changed_when: false   
     when: ansible_distribution == "CentOS"
 
+- hosts: all    
+  become: true
+  tasks:
+      
+  - name: add ssh key for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILl3bCBCVOjQwtAvnZ9gd2itgJD/lbHXyYMAiA8kfz1q ansible"
 
 - hosts: workstations
   become: true
