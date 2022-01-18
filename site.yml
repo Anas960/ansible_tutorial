@@ -2,7 +2,7 @@
 
 - hosts: all
   become : true
-  tasks:    
+  pre_tasks:    
 
   - name: update repo cache (CentOs)
     tags: always
@@ -13,99 +13,27 @@
 
 - hosts: all    
   become: true
-  tasks:
+  roles:
+    - base
       
-  - name: add ssh key for simone
-    tags: always
-    authorized_key:
-      user: simone
-      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILl3bCBCVOjQwtAvnZ9gd2itgJD/lbHXyYMAiA8kfz1q ansible"
-
 - hosts: workstations
   become: true
-  tasks:
-     
-  - name: install unzip
-    package:
-          name: unzip  
-
-  - name: install terraform
-    unarchive:
-            src: https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip
-            dest: /usr/local/bin
-            remote_src: yes
-            mode: 0755
-            owner: root
-            group: root   
-
+  roles:
+    - workstations 
 
 - hosts: web_servers
   become: true
-  tasks:    
-   
-  - name: install apache and php for CentOS servers
-    tags: apache,httpd,centos
-    dnf:
-       name:
-         - httpd
-         - php
-       state: latest
-    when: ansible_distribution == "CentOS"
-
-  - name: start httpd (CentOs) 
-    tags: centos,apache,gttpd
-    service: 
-         name: httpd
-         state: started
-         enabled: yes
-    when: ansible_distribution == "CentOS"
-
-  - name: change email address for admin
-    tags: apache,centos,httpd
-    lineinfile: 
-         path: /etc/httpd/conf/httpd.conf
-         regexp: '^ServerAdmin'
-         line: ServerAdmin somebody@somewhere.net
-    when: ansible_distribution == "CentOS"
-    register: httpd
-
-  - name: restart httpd (CentOs) 
-    tags: apache,centos,httpd
-    service: 
-         name: httpd
-         state: restarted
-    when: httpd.changed     
-     
-       
-
-  - name: copy default html file for site
-    tags: apache,apache2,httpd
-    copy:
-      src: default_site.html
-      dest: /var/www/html/index.html
-      owner: root
-      group: root
-      mode: 0644     
-
+  roles:
+    - web_servers
 
 - hosts: db_servers
   become: true
-  tasks: 
-
-  - name: install mariadb (CentOs)
-    tags: centos,db,mariadb
-    dnf:
-       name: mariadb 
-       state: latest
-    when: ansible_distribution == "CentOS" 
-
+  roles:
+    - db_servers      
+       
 - hosts: file_servers
   become: true
-  tasks:
+  roles:
+    - file_servers      
           
-  - name: install samba package (CentOs)
-    tags: samba  
-    package:
-       name: samba
-       state: latest         
 
